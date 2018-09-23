@@ -1,0 +1,73 @@
+#include "pitches.h"  //add note library
+
+//notes in the melody
+int melody[]={NOTE_FS5, NOTE_A4, NOTE_CS5, NOTE_A4, NOTE_FS4, NOTE_D4, NOTE_D4, NOTE_D4};
+
+//digital pin 35 has a button attached to it. Give it an name
+int buttonPin= 35;
+
+//note durations. 4=quarter note / 8=eighth note
+int noteDurations[]={4, 6, 4, 4, 6, 8, 8, 8};
+
+int green=23;
+int red=22;
+int yellow=21;
+int blue=20;
+
+int lights[]={green,red,yellow,red,green,blue,yellow,blue};
+
+
+void setup(){
+
+  //make the button's pin input
+  pinMode(buttonPin, INPUT);
+  pinMode(6,OUTPUT);
+  pinMode(green,OUTPUT);
+  pinMode(red,OUTPUT);
+  pinMode(yellow,OUTPUT);
+  pinMode(blue,OUTPUT);
+}
+
+
+void loop(){
+  digitalWrite(6,HIGH);
+  digitalWrite(green,HIGH);
+  digitalWrite(red,HIGH);
+  digitalWrite(yellow,HIGH);
+  digitalWrite(blue,HIGH);
+
+
+
+
+  //read the input pin
+  int buttonState = digitalRead(buttonPin);
+
+  //if the button is pressed
+  if (buttonState == 1){
+
+    //iterate over the notes of the melody
+    for (int thisNote=0; thisNote <8; thisNote++){
+      
+
+      digitalWrite(6,LOW);
+      digitalWrite(green,LOW);
+      digitalWrite(red,LOW);
+      digitalWrite(yellow,LOW);
+      digitalWrite(blue,LOW);
+
+      digitalWrite(lights[thisNote],HIGH);
+
+      //to calculate the note duration, take one second. Divided by the note type
+      int noteDuration = 1000 / noteDurations [thisNote];
+      tone(8, melody [thisNote], noteDuration);
+
+      //to distinguish the notes, set a minimum time between them
+      //the note's duration +30% seems to work well
+      int pauseBetweenNotes = noteDuration * 2;
+      delay(pauseBetweenNotes);
+
+      //stop the tone playing
+      noTone(8);
+    }
+  }
+}
