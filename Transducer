@@ -1,0 +1,35 @@
+int emitter=7; //Emitter TD pin
+int rec=33; // receiver TD pin
+int waves=10; //number of waves/2
+IntervalTimer freq; //initiate timer for wave frequency
+IntervalTimer pinger; //initiate timer for frequency of pings
+int count=0; //initialise count for number of waves
+
+void setup() {
+ pinMode(emitter,OUTPUT); //sets emitter pin as output
+ pinMode(rec,INPUT); // sets receiver pin as input
+ Serial.begin(9600); //begins serial 
+ pinger.begin(startping,3000000); //begins timer for TD to ping signal every 3 seconds
+}
+
+void loop() {
+  Serial.println(analogRead(rec)); //reads receiver, redundant at the moment   
+} 
+
+void ping(){
+  // changes the state of tranducer pin from whatever it is to opposite
+  if (digitalRead(emitter)==HIGH){ // if TD pin High, change to low
+    digitalWrite(emitter,LOW);
+  }else{ 
+    digitalWrite(emitter,HIGH); //If low, changes to high
+  }
+  count++; //increases count by one
+  if (count>=waves){ //checks if count has exceeded number of waves specified
+    count=0; // sets count back to zero
+    freq.end(); //stops signal being sent
+  }
+}
+
+void startping(){
+  freq.begin(ping,12.5); //begins timer for squarewave to produce 40kHz squarewave
+}
