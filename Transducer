@@ -1,20 +1,44 @@
 int emitter=7; //Emitter TD pin
 int rec=33; // receiver TD pin
-int waves=10; //number of waves/2
+int waves=6; //number of waves/2
 IntervalTimer freq; //initiate timer for wave frequency
-IntervalTimer pinger; //initiate timer for frequency of pings
 int count=0; //initialise count for number of waves
+char userInput;
+int readcount=0;
+int data[500]; 
 
 void setup() {
  pinMode(emitter,OUTPUT); //sets emitter pin as output
  pinMode(rec,INPUT); // sets receiver pin as input
  Serial.begin(9600); //begins serial 
- pinger.begin(startping,3000000); //begins timer for TD to ping signal every 3 seconds
 }
 
 void loop() {
-  Serial.println(analogRead(rec)); //reads receiver, redundant at the moment   
-} 
+  if(Serial.available()>0){
+
+    userInput= Serial.read(); //read user input
+
+    if(userInput=='g'){
+
+      startping();  //start ping
+      
+      while(readcount<500){ // specifies the number of reading taken
+        
+        data[readcount]=(analogRead(rec)); //adds value read to data
+        readcount++;
+      
+      } //While loop 
+      
+      for(int i=0; i<500;i++){
+        Serial.println(data[i]); //prints data
+        
+      }// for loop   
+    } //if user input 'g'
+  } //Serial.available
+  
+  readcount=0; //resets readcount to 0
+  
+} //Void loop
 
 void ping(){
   // changes the state of tranducer pin from whatever it is to opposite
