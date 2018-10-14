@@ -1,0 +1,46 @@
+import serial
+import time
+import re
+import numpy as np
+import matplotlib.pyplot as plt
+
+def getValues():
+    ''' Gets values from teensy serial monitor'''
+
+    ser.write(b'g') # Wtire g into serial to start ping
+    arduinoData=ser.readline().decode() # Read the result
+
+
+    return arduinoData
+
+def is_number(s):
+    ''' Checks if string passed contains only numbers'''
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False
+
+ser=serial.Serial('COM7', baudrate=9600, timeout=1)  # Sets us connection to teensy serial
+time.sleep(3)  # Waits 3 seconds to allow teensy to initialise
+samples=500   # Number of sample
+dataList=[0]*samples # Creates empty list for samples to be recorded into
+
+
+userInput=input('Ping?') # Ask if ping should be sent
+
+if userInput=='y':   # Look for y to send ping
+    for i in range(samples):
+        data=re.sub('\r\n','',getValues()) # reads line from serial and removes \r\n
+        if is_number(data) and int(data)<1500:
+            dataList[i]=int(data) # add data to lists
+
+
+print(dataList)
+
+x=list(range(len(dataList))) #Just somthing to plot against while i figure out time
+
+plt.plot(x,dataList)  # Plots data
+plt.ylabel('Bytes')
+plt.show()
+
